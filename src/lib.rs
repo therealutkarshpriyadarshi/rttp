@@ -46,6 +46,10 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub mod prelude {
     pub use crate::context::{Context, Extensions, Params};
     pub use crate::http::{Method, Request, Response, StatusCode};
+    pub use crate::llm::{
+        CompletionRequest, ContextWindow, LlmClient, Message as LlmMessage, PromptBuilder,
+        PromptTemplate, RagPipeline, TokenCounter, VectorStore,
+    };
     pub use crate::middleware::{Cors, Logger, Middleware, MiddlewareStack, Next, RequestId};
     pub use crate::realtime::{Event, Message, SseStream, WebSocket, WebSocketUpgrade};
     pub use crate::router::Router;
