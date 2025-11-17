@@ -109,6 +109,9 @@ impl FromStr for Method {
 /// HTTP status codes
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum StatusCode {
+    // 1xx Informational
+    SwitchingProtocols = 101,
+
     // 2xx Success
     Ok = 200,
     Created = 201,
@@ -143,6 +146,7 @@ impl StatusCode {
 
     pub fn reason_phrase(&self) -> &str {
         match self {
+            StatusCode::SwitchingProtocols => "Switching Protocols",
             StatusCode::Ok => "OK",
             StatusCode::Created => "Created",
             StatusCode::Accepted => "Accepted",

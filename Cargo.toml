@@ -42,9 +42,13 @@ async-trait = "0.1"
 flate2 = "1.0"
 brotli = "6.0"
 
+# Real-time features (Phase 6)
+sha1 = "0.10"
+
 [dev-dependencies]
 # Testing utilities
 tokio-test = "0.4"
+chrono = "0.4"
 
 [[example]]
 name = "hello_world"
@@ -65,6 +69,10 @@ path = "examples/phase4_demo.rs"
 [[example]]
 name = "phase5_demo"
 path = "examples/phase5_demo.rs"
+
+[[example]]
+name = "phase6_demo"
+path = "examples/phase6_demo.rs"
 
 [profile.dev]
 opt-level = 0
