@@ -5,7 +5,6 @@
 
 use pttp::prelude::*;
 use tracing::info;
-use tracing_subscriber;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,7 +25,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let server = Server::bind(addr).await?;
     info!("✅ Server successfully bound to {}", addr);
     info!("🎯 Ready to accept connections!");
-    info!("📝 Note: Phase 1 implementation pending - server will accept connections but not handle requests yet");
+    info!("✨ Phase 1: HTTP Server Core - COMPLETE!");
+    info!("📝 Try: curl http://localhost:8080/");
+    info!("📝 Try: curl http://localhost:8080/health");
+    info!("📝 Try: curl -X POST -d 'test data' http://localhost:8080/echo");
 
     // Run server (this will loop indefinitely)
     server.run().await?;
