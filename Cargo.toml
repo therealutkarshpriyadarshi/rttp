@@ -45,6 +45,10 @@ brotli = "6.0"
 # Real-time features (Phase 6)
 sha1 = "0.10"
 
+# Background processing (Phase 7)
+num_cpus = "1.16"
+chrono = "0.4"
+
 [dev-dependencies]
 # Testing utilities
 tokio-test = "0.4"
@@ -73,6 +77,10 @@ path = "examples/phase5_demo.rs"
 [[example]]
 name = "phase6_demo"
 path = "examples/phase6_demo.rs"
+
+[[example]]
+name = "phase7_demo"
+path = "examples/phase7_demo.rs"
 
 [profile.dev]
 opt-level = 0
