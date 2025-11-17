@@ -2,7 +2,11 @@
 //!
 //! This module provides the core HTTP server implementation.
 
+use crate::context::Context;
 use crate::http::{Request, Response};
+use crate::middleware::MiddlewareStack;
+use crate::router::Router;
+use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 use tracing::{debug, error, info, warn};
@@ -13,12 +17,31 @@ const MAX_REQUEST_SIZE: usize = 1024 * 1024;
 /// HTTP server
 pub struct Server {
     addr: String,
+    router: Arc<Router>,
+    middleware: Arc<MiddlewareStack>,
 }
 
 impl Server {
     /// Create a new server instance
     pub fn new(addr: impl Into<String>) -> Self {
-        Self { addr: addr.into() }
+        Self {
+            addr: addr.into(),
+            router: Arc::new(Router::new()),
+            middleware: Arc::new(MiddlewareStack::new()),
+        }
+    }
+
+    /// Create a server with a router and middleware stack
+    pub fn with_router_and_middleware(
+        addr: impl Into<String>,
+        router: Router,
+        middleware: MiddlewareStack,
+    ) -> Self {
+        Self {
+            addr: addr.into(),
+            router: Arc::new(router),
+            middleware: Arc::new(middleware),
+        }
     }
 
     /// Bind the server to the configured address
@@ -31,12 +54,18 @@ impl Server {
         let listener = TcpListener::bind(&self.addr).await?;
         info!("Server listening on {}", self.addr);
 
+        let router = self.router;
+        let middleware = self.middleware;
+
         loop {
             match listener.accept().await {
                 Ok((stream, addr)) => {
                     debug!("Accepted connection from {}", addr);
+                    let router = router.clone();
+                    let middleware = middleware.clone();
+
                     tokio::spawn(async move {
-                        if let Err(e) = handle_connection(stream).await {
+                        if let Err(e) = handle_connection(stream, router, middleware).await {
                             error!("Error handling connection from {}: {}", addr, e);
                         }
                     });
@@ -50,7 +79,11 @@ impl Server {
 }
 
 /// Handle a single TCP connection
-async fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::error::Error>> {
+async fn handle_connection(
+    mut stream: TcpStream,
+    router: Arc<Router>,
+    middleware: Arc<MiddlewareStack>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut buffer = vec![0u8; MAX_REQUEST_SIZE];
     let mut total_read = 0;
 
@@ -78,8 +111,23 @@ async fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::err
                     request.version()
                 );
 
-                // Handle the request and generate a response
-                let response = handle_request(request);
+                // Create context
+                let ctx = Context::new(request);
+
+                // Handle the request through middleware and router
+                let response = if middleware.is_empty() {
+                    // No middleware, just route
+                    router.route(ctx.into_request()).await
+                } else {
+                    // Execute middleware stack with router as final handler
+                    let router = router.clone();
+                    middleware
+                        .execute(ctx, move |ctx| {
+                            let router = router.clone();
+                            async move { router.route(ctx.into_request()).await }
+                        })
+                        .await
+                };
 
                 // Send the response
                 let response_bytes = response.to_bytes();
@@ -113,50 +161,6 @@ async fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::err
     Ok(())
 }
 
-/// Handle a parsed HTTP request and generate a response
-fn handle_request(request: Request) -> Response {
-    // For now, just return a simple response based on the path
-    match request.uri() {
-        "/" => Response::html(
-            r#"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>PTTP - Pure Rust Web Framework</title>
-</head>
-<body>
-    <h1>🦀 Welcome to PTTP!</h1>
-    <p>A Pure Rust Web Framework with AI/LLM Integration</p>
-    <p><strong>Phase 1: HTTP Server Core - COMPLETE!</strong></p>
-    <ul>
-        <li>✅ TCP listener and connection handling</li>
-        <li>✅ HTTP/1.1 request parsing</li>
-        <li>✅ Request/Response abstractions</li>
-        <li>✅ Basic request handling</li>
-    </ul>
-</body>
-</html>
-"#,
-        ),
-        "/health" => Response::json(&serde_json::json!({
-            "status": "ok",
-            "version": crate::VERSION,
-            "phase": "1"
-        }))
-        .unwrap_or_else(|_| Response::internal_error()),
-        "/echo" => {
-            let body_text = String::from_utf8_lossy(request.body());
-            Response::text(format!(
-                "Method: {}\nURI: {}\nBody: {}",
-                request.method().as_str(),
-                request.uri(),
-                body_text
-            ))
-        }
-        _ => Response::not_found().with_body(b"404 - Not Found".to_vec()),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -164,6 +168,14 @@ mod tests {
     #[test]
     fn test_server_creation() {
         let server = Server::new("127.0.0.1:8080");
+        assert_eq!(server.addr, "127.0.0.1:8080");
+    }
+
+    #[test]
+    fn test_server_with_router_and_middleware() {
+        let router = Router::new();
+        let middleware = MiddlewareStack::new();
+        let server = Server::with_router_and_middleware("127.0.0.1:8080", router, middleware);
         assert_eq!(server.addr, "127.0.0.1:8080");
     }
 }

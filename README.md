@@ -14,9 +14,9 @@ pttp/
 │   ├── lib.rs           # Public API
 │   ├── http/            # HTTP protocol ✅ COMPLETE
 │   ├── server/          # TCP server ✅ COMPLETE
-│   ├── router/          # Request routing 📅 PLANNED
-│   ├── middleware/      # Middleware system 📅 PLANNED
-│   ├── context/         # Request context 📅 PLANNED
+│   ├── router/          # Request routing ✅ COMPLETE
+│   ├── middleware/      # Middleware system ✅ COMPLETE
+│   ├── context/         # Request context ✅ COMPLETE
 │   ├── database/        # Database layer 📅 PLANNED
 │   ├── security/        # Auth & security 📅 PLANNED
 │   ├── cache/           # Caching layer 📅 PLANNED
@@ -63,8 +63,11 @@ cargo test
 # Run hello world example
 cargo run --example hello_world
 
+# Run Phase 2 demo (showcases router & middleware)
+cargo run --example phase2_demo
+
 # Run with hot reload (development)
-cargo watch -x 'run --example hello_world'
+cargo watch -x 'run --example phase2_demo'
 
 # Run clippy for lints
 cargo clippy
@@ -89,11 +92,13 @@ cargo fmt
 - [x] Request/Response abstractions
 - [x] Basic request handling
 
-### 📅 Phase 2: Router & Middleware (PLANNED)
-- [ ] Pattern matching router
-- [ ] Path parameter extraction
-- [ ] Middleware system
-- [ ] Request context
+### ✅ Phase 2: Router & Middleware (COMPLETED)
+- [x] Pattern matching router (exact, parameterized, wildcard)
+- [x] Path parameter extraction
+- [x] Middleware system with chaining (onion model)
+- [x] Request context with type-safe extensions
+- [x] Built-in middleware (Logger, CORS, RequestID)
+- [x] Query parameter handling
 
 ### 📅 Phase 3: Database Layer (PLANNED)
 - [ ] Connection pooling
@@ -194,9 +199,11 @@ Types:
 
 ## 📝 Current Status
 
-**Phase 1 Completed!** ✅
+**Phase 2 Completed!** ✅
 
-The HTTP Server Core is fully operational:
+The Router & Middleware system is fully operational:
+
+**Phase 1 - HTTP Server Core:**
 - ✅ Project structure established
 - ✅ Module hierarchy created
 - ✅ Development tools configured
@@ -205,21 +212,32 @@ The HTTP Server Core is fully operational:
 - ✅ HTTP/1.1 request parser built from scratch
 - ✅ TCP connection handling with async I/O
 - ✅ Request/response lifecycle complete
-- ✅ Basic request routing and handling
-- ✅ Comprehensive test coverage (17 unit tests)
+
+**Phase 2 - Router & Middleware:**
+- ✅ Pattern matching router (exact, parameterized, wildcard)
+- ✅ Path parameter extraction (`/users/:id`)
+- ✅ Middleware system with onion model chaining
+- ✅ Built-in middleware (Logger, CORS, RequestID)
+- ✅ Request context with type-safe extensions
+- ✅ Query parameter handling
+- ✅ Comprehensive test coverage (45 unit tests)
 
 **Working Features:**
 - HTTP/1.1 protocol support
-- Multiple endpoints (/, /health, /echo)
+- Advanced routing with path parameters (`/users/:id`, `/users/:user_id/posts/:post_id`)
+- Wildcard routes (`/files/*`)
+- Method-based routing (GET, POST, PUT, DELETE, PATCH)
+- Middleware chaining with before/after hooks
+- Type-safe request context and extensions
+- Query parameter extraction
 - JSON and HTML responses
-- POST request body handling
 - Proper error handling and edge cases
 
-**Next Steps (Phase 2):**
-1. Implement pattern matching router
-2. Add path parameter extraction
-3. Build middleware system
-4. Create request context
+**Next Steps (Phase 3):**
+1. Implement connection pooling
+2. Build query builder
+3. Add ORM features
+4. Create transaction management
 
 ## 🎯 Success Metrics (End Goal)
 

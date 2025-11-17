@@ -22,6 +22,9 @@ serde_json = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
+# UUID generation for request IDs
+uuid = { version = "1", features = ["v4"] }
+
 [dev-dependencies]
 # Testing utilities
 tokio-test = "0.4"
@@ -29,6 +32,10 @@ tokio-test = "0.4"
 [[example]]
 name = "hello_world"
 path = "examples/hello_world.rs"
+
+[[example]]
+name = "phase2_demo"
+path = "examples/phase2_demo.rs"
 
 [profile.dev]
 opt-level = 0
