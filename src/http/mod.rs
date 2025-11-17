@@ -6,9 +6,11 @@
 //! - Header management
 //! - Method and status code types
 
+use crate::context::Extensions;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
+use std::net::SocketAddr;
 use std::str::{self, FromStr};
 
 /// HTTP parsing errors
@@ -125,6 +127,7 @@ pub enum StatusCode {
     Forbidden = 403,
     NotFound = 404,
     MethodNotAllowed = 405,
+    TooManyRequests = 429,
 
     // 5xx Server Errors
     InternalServerError = 500,
@@ -153,6 +156,7 @@ impl StatusCode {
             StatusCode::Forbidden => "Forbidden",
             StatusCode::NotFound => "Not Found",
             StatusCode::MethodNotAllowed => "Method Not Allowed",
+            StatusCode::TooManyRequests => "Too Many Requests",
             StatusCode::InternalServerError => "Internal Server Error",
             StatusCode::NotImplemented => "Not Implemented",
             StatusCode::BadGateway => "Bad Gateway",
@@ -200,6 +204,8 @@ pub struct Request {
     version: Version,
     headers: HeaderMap,
     body: Vec<u8>,
+    extensions: Extensions,
+    peer_addr: Option<SocketAddr>,
 }
 
 impl Request {
@@ -210,6 +216,8 @@ impl Request {
             version: Version::Http11,
             headers: HashMap::new(),
             body: Vec::new(),
+            extensions: Extensions::new(),
+            peer_addr: None,
         }
     }
 
@@ -267,6 +275,8 @@ impl Request {
             version,
             headers,
             body,
+            extensions: Extensions::new(),
+            peer_addr: None,
         };
 
         let total_bytes = body_start + content_length;
@@ -317,6 +327,26 @@ impl Request {
 
     pub fn header(&self, name: &str) -> Option<&String> {
         self.headers.get(name)
+    }
+
+    pub fn headers_mut(&mut self) -> &mut HeaderMap {
+        &mut self.headers
+    }
+
+    pub fn extensions(&self) -> &Extensions {
+        &self.extensions
+    }
+
+    pub fn extensions_mut(&mut self) -> &mut Extensions {
+        &mut self.extensions
+    }
+
+    pub fn peer_addr(&self) -> Option<SocketAddr> {
+        self.peer_addr
+    }
+
+    pub fn set_peer_addr(&mut self, addr: SocketAddr) {
+        self.peer_addr = Some(addr);
     }
 }
 
@@ -400,6 +430,11 @@ impl Response {
         &self.body
     }
 
+    /// Create a response builder
+    pub fn builder() -> ResponseBuilder {
+        ResponseBuilder::new()
+    }
+
     /// Convert response to HTTP/1.1 wire format
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
@@ -429,6 +464,52 @@ impl Response {
         bytes.extend_from_slice(&self.body);
 
         bytes
+    }
+}
+
+/// Response builder for constructing HTTP responses with a fluent API
+pub struct ResponseBuilder {
+    status: StatusCode,
+    headers: HeaderMap,
+    body: Option<String>,
+}
+
+impl ResponseBuilder {
+    pub fn new() -> Self {
+        Self {
+            status: StatusCode::Ok,
+            headers: HashMap::new(),
+            body: None,
+        }
+    }
+
+    pub fn status(mut self, status: StatusCode) -> Self {
+        self.status = status;
+        self
+    }
+
+    pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
+        self.headers.insert(name.into(), value.into());
+        self
+    }
+
+    pub fn body(mut self, body: impl Into<String>) -> Self {
+        self.body = Some(body.into());
+        self
+    }
+
+    pub fn unwrap(self) -> Response {
+        Response {
+            status: self.status,
+            headers: self.headers,
+            body: self.body.unwrap_or_default().into_bytes(),
+        }
+    }
+}
+
+impl Default for ResponseBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -17,8 +17,8 @@ pttp/
 │   ├── router/          # Request routing ✅ COMPLETE
 │   ├── middleware/      # Middleware system ✅ COMPLETE
 │   ├── context/         # Request context ✅ COMPLETE
-│   ├── database/        # Database layer 📅 PLANNED
-│   ├── security/        # Auth & security 📅 PLANNED
+│   ├── database/        # Database layer ✅ COMPLETE
+│   ├── security/        # Auth & security ✅ COMPLETE
 │   ├── cache/           # Caching layer 📅 PLANNED
 │   ├── realtime/        # WebSocket/SSE 📅 PLANNED
 │   ├── background/      # Task queue 📅 PLANNED
@@ -32,6 +32,17 @@ pttp/
 - `tokio` - Async runtime
 - `serde` & `serde_json` - Serialization
 - `tracing` - Logging infrastructure
+- `uuid` - Request ID generation
+
+### Database (Phase 3)
+- `tokio-postgres` - PostgreSQL wire protocol
+- `postgres-types` - PostgreSQL type mappings
+
+### Security (Phase 4)
+- `jsonwebtoken` - JWT token generation/validation
+- `argon2` - Password hashing
+- `rand` - Cryptographically secure random numbers
+- `base64` - Base64 encoding/decoding
 
 ### Minimal Philosophy
 We build core components from scratch. External crates are only used where:
@@ -69,6 +80,9 @@ cargo run --example phase2_demo
 # Run Phase 3 demo (showcases database layer)
 # Note: Requires PostgreSQL database
 cargo run --example phase3_demo
+
+# Run Phase 4 demo (showcases security features)
+cargo run --example phase4_demo
 
 # Run with hot reload (development)
 cargo watch -x 'run --example phase2_demo'
@@ -110,11 +124,15 @@ cargo fmt
 - [x] ORM features
 - [x] Transaction management
 
-### 📅 Phase 4: Security Layer (PLANNED)
-- [ ] JWT authentication
-- [ ] Session management
-- [ ] RBAC authorization
-- [ ] CORS, CSRF, rate limiting
+### ✅ Phase 4: Security Layer (COMPLETED)
+- [x] JWT authentication (token generation, validation)
+- [x] Password hashing (Argon2)
+- [x] Session management (in-memory backend)
+- [x] RBAC authorization (roles, permissions, policies)
+- [x] Authentication middleware (RequireAuth)
+- [x] Authorization middleware (RequireRole, RequirePermission)
+- [x] CSRF protection
+- [x] Rate limiting (token bucket algorithm)
 
 ### 📅 Phase 5: Performance Features (PLANNED)
 - [ ] In-memory cache (LRU)
