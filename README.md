@@ -66,6 +66,10 @@ cargo run --example hello_world
 # Run Phase 2 demo (showcases router & middleware)
 cargo run --example phase2_demo
 
+# Run Phase 3 demo (showcases database layer)
+# Note: Requires PostgreSQL database
+cargo run --example phase3_demo
+
 # Run with hot reload (development)
 cargo watch -x 'run --example phase2_demo'
 
@@ -100,11 +104,11 @@ cargo fmt
 - [x] Built-in middleware (Logger, CORS, RequestID)
 - [x] Query parameter handling
 
-### 📅 Phase 3: Database Layer (PLANNED)
-- [ ] Connection pooling
-- [ ] Query builder
-- [ ] ORM features
-- [ ] Transaction management
+### ✅ Phase 3: Database Layer (COMPLETED)
+- [x] Connection pooling
+- [x] Query builder
+- [x] ORM features
+- [x] Transaction management
 
 ### 📅 Phase 4: Security Layer (PLANNED)
 - [ ] JWT authentication
@@ -199,9 +203,9 @@ Types:
 
 ## 📝 Current Status
 
-**Phase 2 Completed!** ✅
+**Phase 3 Completed!** ✅
 
-The Router & Middleware system is fully operational:
+The Database Layer is fully operational:
 
 **Phase 1 - HTTP Server Core:**
 - ✅ Project structure established
@@ -222,6 +226,15 @@ The Router & Middleware system is fully operational:
 - ✅ Query parameter handling
 - ✅ Comprehensive test coverage (45 unit tests)
 
+**Phase 3 - Database Layer:**
+- ✅ Custom connection pool with health checks and idle timeout
+- ✅ Type-safe query builder for SELECT, INSERT, UPDATE, DELETE
+- ✅ ORM features with Model trait and row mapping
+- ✅ Transaction management with automatic rollback on drop
+- ✅ Support for nested transactions (savepoints)
+- ✅ Parameterized queries to prevent SQL injection
+- ✅ PostgreSQL integration with tokio-postgres
+
 **Working Features:**
 - HTTP/1.1 protocol support
 - Advanced routing with path parameters (`/users/:id`, `/users/:user_id/posts/:post_id`)
@@ -231,13 +244,17 @@ The Router & Middleware system is fully operational:
 - Type-safe request context and extensions
 - Query parameter extraction
 - JSON and HTML responses
+- Database connection pooling with automatic health checks
+- Type-safe SQL query builder with parameter binding
+- ORM with Model trait for struct-to-table mapping
+- ACID transactions with automatic rollback
 - Proper error handling and edge cases
 
-**Next Steps (Phase 3):**
-1. Implement connection pooling
-2. Build query builder
-3. Add ORM features
-4. Create transaction management
+**Next Steps (Phase 4):**
+1. Implement JWT authentication
+2. Build session management
+3. Add RBAC authorization
+4. Create security middleware (CSRF, rate limiting)
 
 ## 🎯 Success Metrics (End Goal)
 
