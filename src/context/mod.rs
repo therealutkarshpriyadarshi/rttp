@@ -15,6 +15,14 @@ pub struct Extensions {
     map: HashMap<TypeId, Box<dyn Any + Send + Sync>>,
 }
 
+impl std::fmt::Debug for Extensions {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Extensions")
+            .field("type_count", &self.map.len())
+            .finish()
+    }
+}
+
 impl Extensions {
     /// Create a new empty extensions map
     pub fn new() -> Self {

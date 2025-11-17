@@ -29,6 +29,12 @@ uuid = { version = "1", features = ["v4"] }
 tokio-postgres = { version = "0.7", features = ["with-serde_json-1"] }
 postgres-types = { version = "0.2", features = ["derive"] }
 
+# Security (Phase 4)
+jsonwebtoken = "9"
+argon2 = "0.5"
+rand = "0.8"
+base64 = "0.22"
+
 [dev-dependencies]
 # Testing utilities
 tokio-test = "0.4"
@@ -44,6 +50,10 @@ path = "examples/phase2_demo.rs"
 [[example]]
 name = "phase3_demo"
 path = "examples/phase3_demo.rs"
+
+[[example]]
+name = "phase4_demo"
+path = "examples/phase4_demo.rs"
 
 [profile.dev]
 opt-level = 0
