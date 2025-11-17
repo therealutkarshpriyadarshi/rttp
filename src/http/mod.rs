@@ -430,6 +430,21 @@ impl Response {
         &self.body
     }
 
+    /// Set the response body (mutable)
+    pub fn set_body(&mut self, body: Vec<u8>) {
+        self.body = body;
+    }
+
+    /// Set a header (mutable)
+    pub fn set_header(&mut self, name: String, value: String) {
+        self.headers.insert(name, value);
+    }
+
+    /// Remove a header (mutable)
+    pub fn remove_header(&mut self, name: &str) -> Option<String> {
+        self.headers.remove(name)
+    }
+
     /// Create a response builder
     pub fn builder() -> ResponseBuilder {
         ResponseBuilder::new()

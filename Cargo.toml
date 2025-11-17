@@ -35,6 +35,13 @@ argon2 = "0.5"
 rand = "0.8"
 base64 = "0.22"
 
+# Async traits
+async-trait = "0.1"
+
+# Compression (Phase 5)
+flate2 = "1.0"
+brotli = "6.0"
+
 [dev-dependencies]
 # Testing utilities
 tokio-test = "0.4"
@@ -54,6 +61,10 @@ path = "examples/phase3_demo.rs"
 [[example]]
 name = "phase4_demo"
 path = "examples/phase4_demo.rs"
+
+[[example]]
+name = "phase5_demo"
+path = "examples/phase5_demo.rs"
 
 [profile.dev]
 opt-level = 0
