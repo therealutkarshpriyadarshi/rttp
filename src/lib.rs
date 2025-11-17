@@ -47,6 +47,7 @@ pub mod prelude {
     pub use crate::context::{Context, Extensions, Params};
     pub use crate::http::{Method, Request, Response, StatusCode};
     pub use crate::middleware::{Cors, Logger, Middleware, MiddlewareStack, Next, RequestId};
+    pub use crate::realtime::{Event, Message, SseStream, WebSocket, WebSocketUpgrade};
     pub use crate::router::Router;
     pub use crate::server::Server;
 }
